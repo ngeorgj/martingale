@@ -1,4 +1,4 @@
-# Martingale
+# Martingale Simulator
 
 A python implementation of the Martingale betting strategy.
 
