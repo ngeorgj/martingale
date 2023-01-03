@@ -28,8 +28,8 @@ m = Martingale(balance=1000, factor=2, risk=10, goal=5000)
 ## Run 10000 simulations
 
 ```python
-# play the game 1000 times
-m.play_multiple_times(1000)
+# play the game 10000 times
+m.play_multiple_times(10000)
 m.see_stats()
 
 # plot equity curve (matplotlib required)
