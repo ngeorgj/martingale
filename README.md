@@ -1,93 +1,68 @@
-# Martingale
-A simple martingale system for betting/trading purposes.
+# Martingale Simulator
 
-Martingale trading can be tricky and dangerous when not performed correctly,
-it needs a extreme sense of money management to make it work right.
+A python implementation of the Martingale betting strategy.
 
-This algorythm is made to simplify it.
+## Usage
 
-The flow is the following:
+To use the Martingale class, instantiate it with the following parameters:
 
-You take a bet, if the bet is winning, you keep the betsize, if you loses,
-you increase the betsize using a factor. Usually bigger than 1.25x the size of the last losing bet.
-if you lose again, then you raise the bet again, and you keep raising till you get a winning bet.
+- balance: Initial balance of the account
+- factor: Multiplier to use for increasing the bet size after a loss
+- risk: Percentage of the balance to use as the initial bet size
+- goal: Target balance to try to reach
+- print_stats: Whether to print stats after each game
 
-That's why it's dangerous. You can easily run out of cash if you don't use correct money management.
+Optionally, you can also specify whether to print stats after each game with the `print_stats` parameter.
 
-The class:
+## Install Dependencies
 ```python
-class Martingale:
+pip install matplotlib
+```  
 
-    def __init__(self, balance, factor, risk, goal):
-        self.starting_balance = balance
-        self.balance = balance
-        self.factor = factor
-        self.risk_p = risk / 100
-        self.goal = goal + balance
+## Create a Martingale object
 
-        self.bet = self.balance * self.risk_p
-
-        # STATS
-        self.stats = {"games": 0,
-                      "lowest_balance": self.balance,
-                      "current_drawdown": 0,
-                      "max_drawdown": 0}
-
-        self.wins = []
-        self.losses = []
-
-    def lose(self, betsize):
-        self.stats["games"] += 1
-        self.bet = self.bet * self.factor
-        self.balance -= betsize
-        self.losses.append(betsize)
-        print(f"[L][{self.stats['games'] - 1}] -{betsize:.2f} -> {self.balance:.2f}")
-
-    def win(self, betsize):
-        self.stats["games"] += 1
-        self.bet = self.balance * self.risk_p
-        self.balance += betsize
-        self.wins.append(betsize)
-        print(f"[W][{self.stats['games'] - 1}] +{betsize:.2f} -> {self.balance:.2f}")
-
-    def refresh_stats(self):
-        if self.balance < self.stats['lowest_balance']:
-            self.stats['lowest_balance'] = round(self.balance, 2)
-        self.stats['current_drawdown'] = round((self.balance - self.starting_balance) / 100, 2)
-        if self.stats['current_drawdown'] < self.stats['max_drawdown']:
-            self.stats['max_drawdown'] = round(self.stats['current_drawdown'], 2)
-
-    def see_stats(self):
-        print("\n-- STATISTICS ----------------------")
-        print(f" Victories: {len(self.wins)}")
-        print(f" Losses: {len(self.losses)}")
-        for key in self.stats:
-            print(f" {key.title()}: {self.stats[key]}")
-        print(f" Avg. Profit: ${sum(self.wins) / len(self.wins):.2f}")
-        print(f" Avg. Loss: ${sum(self.losses) / len(self.losses):.2f}")
-
-        print("\n-- BALANCE ------------------------")
-        print(f" Your goal was: ${self.goal:.2f}")
-        print(f" Your Balance is: ${self.balance:.2f}")
-        print("\n-- PROFIT ---------------------------")
-        print(f"$                           {self.balance - self.starting_balance:.2f}")
-        print("-------------------------------------")
-
-    def play(self):
-        result = random.randint(0, 1)
-        if result == 0:
-            self.lose(self.bet)
-
-        elif result == 1:
-            self.win(self.bet)
-
-        self.refresh_stats()
-
+```python
+m = Martingale(balance=1000, factor=2, risk=10, goal=5000)
 ```
 
-The whole program is "modularized" so you can use it to build strategies for betting and/or trading.
+## Run 10000 simulations
 
-Please take note that this system is not supposed to be used irresponsably and it's not a promise of profits.
+```python
+# play the game 10000 times
+m.play_multiple_times(10000)
+m.see_stats()
 
-@ngeorg at 31/08/2020, made during the pandemic!
+# plot equity curve (matplotlib required)
+plt.plot(m.balances)
+plt.show()
+```
 
+# General Information about the Martingale Trading Strategy
+
+The Martingale trading strategy is a popular method in forex and binary options trading, but is not without its risks. It is based on the idea that by doubling the size of a trade after a loss, you will eventually recoup your losses and make a profit.
+
+## How it works
+
+1. Choose a trading instrument and set the initial trade size.
+2. If the trade is successful, repeat step 1 with the same trade size.
+3. If the trade is unsuccessful, double the trade size and repeat step 1.
+4. Repeat this process until a trade is successful, at which point you will have recouped your losses and made a profit equal to the initial trade size.
+
+## Pros
+
+- Simple to implement
+- Can be profitable in a series of trades with a high win rate
+
+## Cons
+
+- Can lead to rapid account depletion if a long losing streak occurs
+- Does not account for the inherent risk and return of the underlying asset
+- Ignores the impact of transaction costs and slippage
+
+## Risk Management
+
+It is important to use risk management techniques when using the Martingale strategy, such as setting stop losses and limiting the maximum trade size. It is also crucial to have a sound understanding of the underlying market and to trade within one's means.
+
+## Conclusion
+
+The Martingale strategy can be a useful tool in certain trading situations, but it is not a guarantee of success and carries a high level of risk. As with any trading strategy, it is important to thoroughly understand the risks and to use proper risk management techniques.
